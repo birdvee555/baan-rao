@@ -22,7 +22,7 @@ export default function ReorderAgain({ familyId, items }: { familyId: string; it
     } catch {
       /* ข้าม */
     }
-    router.push("/");
+    router.push("/shopping");
   }
 
   return (
@@ -30,9 +30,10 @@ export default function ReorderAgain({ familyId, items }: { familyId: string; it
       type="button"
       onClick={go}
       disabled={items.length === 0}
-      className="mt-6 h-14 w-full rounded-2xl border-2 border-air-200 bg-air-100 text-lg font-bold disabled:opacity-50"
+      className="mt-6 flex h-13 w-full items-center justify-center gap-2 rounded-2xl bg-mint-700 text-base font-bold text-white shadow-sm transition-all hover:bg-mint-800 active:scale-[0.98] disabled:opacity-50"
     >
-      🔄 สั่งรายการนี้อีกครั้ง
+      <span className="text-lg">🔄</span>
+      <span>สั่งเหมือนครั้งนี้</span>
     </button>
   );
 }

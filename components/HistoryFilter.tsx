@@ -39,22 +39,21 @@ export default function HistoryFilter({ availableMonths, selectedMonth, searchQu
   }
 
   return (
-    <div className="mt-3 space-y-2">
+    <div className="space-y-1.5">
       <div className="flex gap-2">
         {/* ช่องค้นหาเลขออเดอร์ */}
         <div className="relative flex-1">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-ink-soft">🔍</span>
           <input
             type="search"
             defaultValue={searchQuery || ""}
-            placeholder="ค้นหาเลขออเดอร์ เช่น 690901"
+            placeholder="🔎 ค้นหาเลขออเดอร์ เช่น 690901"
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 updateQuery(selectedMonth || "", (e.target as HTMLInputElement).value);
               }
             }}
             onBlur={(e) => updateQuery(selectedMonth || "", e.target.value)}
-            className="h-11 w-full rounded-2xl border-2 border-mint-100 bg-white pl-9 pr-3 text-sm text-ink outline-none focus:border-mint-500"
+            className="h-11 w-full rounded-2xl border-2 border-mint-100 bg-white px-3.5 text-sm text-ink placeholder:text-ink-soft/60 outline-none focus:border-mint-500 shadow-2xs transition-colors"
           />
         </div>
 
@@ -63,7 +62,7 @@ export default function HistoryFilter({ availableMonths, selectedMonth, searchQu
           <select
             value={selectedMonth || ""}
             onChange={(e) => updateQuery(e.target.value, searchQuery || "")}
-            className="h-11 rounded-2xl border-2 border-mint-100 bg-white px-3 text-sm font-semibold text-ink outline-none focus:border-mint-500"
+            className="h-11 rounded-2xl border-2 border-mint-100 bg-white px-3 text-xs font-bold text-ink outline-none focus:border-mint-500 shadow-2xs shrink-0"
           >
             <option value="">ทุกเดือน</option>
             {availableMonths.map((ym) => (
