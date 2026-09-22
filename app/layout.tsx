@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "บ้านต้นไผ่ & ใบหลิว — ซื้ออะไรดี วันนี้?",
   description: "สั่งของเข้าบ้านแบบแตะเลือก ไม่ต้องพิมพ์ซ้ำ",
   appleWebApp: { capable: true, title: "บ้านต้นไผ่&ใบหลิว", statusBarStyle: "default" },
-  icons: { icon: "/logo.jpg" },
+  icons: { icon: "/logo.jpg", apple: "/logo.jpg" },
 };
 
 export const viewport: Viewport = {

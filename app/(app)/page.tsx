@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PwaInstallPrompt from "@/components/PwaInstallPrompt";
 import { requireMember } from "@/lib/auth";
 import { getActive } from "@/lib/queries";
 
@@ -31,6 +32,9 @@ export default async function HomePage() {
           </p>
         </div>
       </header>
+
+      {/* ── แบนเนอร์แนะนำติดตั้งแอปลงมือถือ (PWA) ── */}
+      <PwaInstallPrompt mode="banner" />
 
       {/* ── Card แจ้งเตือนรายการที่กำลังซื้ออยู่ (ถ้ามี) ── */}
       {remaining > 0 ? (

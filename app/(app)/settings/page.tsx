@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PwaInstallPrompt from "@/components/PwaInstallPrompt";
 import { lockApp } from "@/lib/actions/auth";
 import { requireMember } from "@/lib/auth";
 
@@ -63,7 +64,7 @@ export default async function SettingsPage() {
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-black text-ink group-hover:text-sky-800 transition-colors">
+              <h2 className="text-lg font-bold text-ink group-hover:text-sky-800 transition-colors">
                 Telegram
               </h2>
               <span className="text-lg text-sky-600 font-bold opacity-70 group-hover:translate-x-1 transition-transform">
@@ -75,6 +76,9 @@ export default async function SettingsPage() {
             </p>
           </div>
         </Link>
+
+        {/* เมนูย่อย 3: ติดตั้งแอปลงมือถือ */}
+        <PwaInstallPrompt mode="card" />
       </div>
 
       {/* ── ส่วนความปลอดภัย (ออกจากระบบ / ล็อกเครื่อง) ── */}
