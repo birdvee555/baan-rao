@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { after } from "next/server";
 import { requireMember } from "../auth";
 import { db } from "../db";
 import { pingFamily } from "../realtime";
@@ -53,19 +52,19 @@ export async function submitOrder(input: SendInput[]): Promise<SendResult> {
 
   await changed(family.realtime_key);
 
-  // แจ้งเตือน Telegram คนอื่นในบ้าน (ไม่รวมคนสั่ง) หลังตอบผู้ใช้แล้ว ไม่หน่วงการกดส่ง
+  // แจ้งเตือน Telegram คนอื่นในบ้าน (ไม่รวมคนสั่ง)
   const sent = items.map((i) => ({ productId: i.product_id, quantity: i.quantity, note: i.note }));
   const orderNo = (data as { order_no?: string })?.order_no || null;
-  after(async () => {
-    try {
-      const config = await getFamilyTelegramConfig(family.id);
-      if (config.isEnabled && config.botToken) {
-        await notifyBuyers(family.id, member, sent, config.botToken, orderNo);
-      }
-    } catch {
-      // Telegram failure should never impact order submission
+  try {
+    const config = await getFamilyTelegramConfig(family.id);
+    if (config.isEnabled && config.botToken) {
+      await notifyBuyers(family.id, member, sent, config.botToken, orderNo);
+    } else {
+      console.warn("[submitOrder] Telegram not sent. isEnabled:", config.isEnabled, "hasToken:", !!config.botToken, "error:", config.errorMessage);
     }
-  });
+  } catch (err) {
+    console.error("[submitOrder] Telegram notification error:", err);
+  }
 
   return {
     ok: true,
@@ -359,24 +358,22 @@ export async function updateItem(itemId: string, quantity: number, note: string)
   const fromQty = found.item.quantity;
   const oldItem = found.item;
   const orderNo = found.orderNo;
-  after(async () => {
-    try {
-      const config = await getFamilyTelegramConfig(family.id);
-      if (config.isEnabled && config.botToken) {
-        const msg = buildEditMessage(
-          orderNo,
-          { name: oldItem.name, emoji: oldItem.emoji, unit: oldItem.unit },
-          fromQty,
-          quantity,
-          oldItem.isPurchased,
-          newNote !== oldItem.note ? newNote : null,
-        );
-        await notifyOthers(family.id, msg, config.botToken);
-      }
-    } catch {
-      // ignore
+  try {
+    const config = await getFamilyTelegramConfig(family.id);
+    if (config.isEnabled && config.botToken) {
+      const msg = buildEditMessage(
+        orderNo,
+        { name: oldItem.name, emoji: oldItem.emoji, unit: oldItem.unit },
+        fromQty,
+        quantity,
+        oldItem.isPurchased,
+        newNote !== oldItem.note ? newNote : null,
+      );
+      await notifyOthers(family.id, msg, config.botToken);
     }
-  });
+  } catch (err) {
+    console.error("[updateItem] Telegram error:", err);
+  }
 
   return { ok: true };
 }
@@ -399,40 +396,38 @@ export async function removeItem(itemId: string): Promise<EditResult> {
   const orderNo = found.orderNo;
   const listCancelled = Boolean((data as { list_cancelled?: boolean })?.list_cancelled);
 
-  after(async () => {
-    try {
-      const config = await getFamilyTelegramConfig(family.id);
-      if (config.isEnabled && config.botToken) {
-        if (listCancelled) {
-          // เอาชิ้นสุดท้ายออก = ยกเลิกทั้งใบ
-          const msg = buildCancelOrderMessage(orderNo, [
-            {
-              name: removedItem.name,
-              emoji: removedItem.emoji,
-              quantity: removedItem.quantity,
-              unit: removedItem.unit,
-              is_purchased: removedItem.isPurchased,
-            },
-          ]);
-          await notifyOthers(family.id, msg, config.botToken);
-        } else {
-          const msg = buildRemoveMessage(
-            orderNo,
-            {
-              name: removedItem.name,
-              emoji: removedItem.emoji,
-              quantity: removedItem.quantity,
-              unit: removedItem.unit,
-            },
-            removedItem.isPurchased,
-          );
-          await notifyOthers(family.id, msg, config.botToken);
-        }
+  try {
+    const config = await getFamilyTelegramConfig(family.id);
+    if (config.isEnabled && config.botToken) {
+      if (listCancelled) {
+        // เอาชิ้นสุดท้ายออก = ยกเลิกทั้งใบ
+        const msg = buildCancelOrderMessage(orderNo, [
+          {
+            name: removedItem.name,
+            emoji: removedItem.emoji,
+            quantity: removedItem.quantity,
+            unit: removedItem.unit,
+            is_purchased: removedItem.isPurchased,
+          },
+        ]);
+        await notifyOthers(family.id, msg, config.botToken);
+      } else {
+        const msg = buildRemoveMessage(
+          orderNo,
+          {
+            name: removedItem.name,
+            emoji: removedItem.emoji,
+            quantity: removedItem.quantity,
+            unit: removedItem.unit,
+          },
+          removedItem.isPurchased,
+        );
+        await notifyOthers(family.id, msg, config.botToken);
       }
-    } catch {
-      // ignore
     }
-  });
+  } catch (err) {
+    console.error("[removeItem] Telegram error:", err);
+  }
 
   return { ok: true };
 }
@@ -477,24 +472,22 @@ export async function cancelList(): Promise<{ ok: boolean; error?: string }> {
 
   // 4. แจ้งเตือน Telegram
   const orderNo = (list.order_no as string | null) ?? null;
-  after(async () => {
-    try {
-      const config = await getFamilyTelegramConfig(family.id);
-      if (config.isEnabled && config.botToken) {
-        const notifyItems = (items ?? []).map((i) => ({
-          name: i.name_snapshot as string,
-          emoji: i.emoji as string,
-          quantity: Number(i.quantity),
-          unit: i.unit as string,
-          is_purchased: Boolean(i.is_purchased),
-        }));
-        const msg = buildCancelOrderMessage(orderNo, notifyItems);
-        await notifyOthers(family.id, msg, config.botToken);
-      }
-    } catch {
-      // ignore
+  try {
+    const config = await getFamilyTelegramConfig(family.id);
+    if (config.isEnabled && config.botToken) {
+      const notifyItems = (items ?? []).map((i) => ({
+        name: i.name_snapshot as string,
+        emoji: i.emoji as string,
+        quantity: Number(i.quantity),
+        unit: i.unit as string,
+        is_purchased: Boolean(i.is_purchased),
+      }));
+      const msg = buildCancelOrderMessage(orderNo, notifyItems);
+      await notifyOthers(family.id, msg, config.botToken);
     }
-  });
+  } catch (err) {
+    console.error("[cancelList] Telegram error:", err);
+  }
 
   return { ok: true };
 }
