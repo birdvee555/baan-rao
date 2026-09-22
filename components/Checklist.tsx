@@ -98,15 +98,26 @@ export default function Checklist({ items, orderNo }: Props) {
 
   if (view.length === 0) {
     return (
-      <div className="mt-10 text-center">
+      <div className="mt-6 text-center">
+        <div className="mb-6 flex justify-start">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 rounded-2xl border border-mint-200/80 bg-white px-4 py-2.5 text-sm font-bold text-ink shadow-2xs transition-all hover:bg-mint-50 hover:border-mint-300 active:scale-95 active:bg-mint-100"
+          >
+            <span className="text-base font-black text-mint-700">←</span>
+            <span>หน้าหลัก</span>
+          </Link>
+        </div>
         <p className="text-5xl">🌿</p>
         <p className="mt-3 text-lg font-semibold">ตอนนี้ไม่มีของที่ต้องซื้อ</p>
-        <Link
-          href="/"
-          className="mt-5 inline-flex h-14 items-center rounded-2xl bg-mint-700 px-8 text-lg font-bold text-white shadow-md active:bg-mint-800 transition-colors"
-        >
-          🛒 ไปสั่งของ
-        </Link>
+        <div className="mt-5 flex flex-col items-center gap-3">
+          <Link
+            href="/shopping"
+            className="inline-flex h-13 items-center rounded-2xl bg-mint-700 px-8 text-base font-bold text-white shadow-md active:bg-mint-800 transition-colors"
+          >
+            🛒 ไปสั่งของ
+          </Link>
+        </div>
       </div>
     );
   }
@@ -115,6 +126,16 @@ export default function Checklist({ items, orderNo }: Props) {
 
   return (
     <>
+      <div className="mb-3">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 rounded-2xl border border-mint-200/80 bg-white px-4 py-2.5 text-sm font-bold text-ink shadow-2xs transition-all hover:bg-mint-50 hover:border-mint-300 active:scale-95 active:bg-mint-100"
+        >
+          <span className="text-base font-black text-mint-700">←</span>
+          <span>หน้าหลัก</span>
+        </Link>
+      </div>
+
       <div className="mt-1">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-ink flex items-baseline gap-2">

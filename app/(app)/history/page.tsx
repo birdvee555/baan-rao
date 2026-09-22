@@ -24,7 +24,7 @@ export default async function HistoryPage({
           className="inline-flex items-center gap-2 rounded-2xl border border-mint-200/80 bg-white px-4 py-2.5 text-sm font-bold text-ink shadow-2xs transition-all hover:bg-mint-50 hover:border-mint-300 active:scale-95 active:bg-mint-100"
         >
           <span className="text-base font-black text-mint-700">←</span>
-          <span>กลับ</span>
+          <span>หน้าหลัก</span>
         </Link>
       </div>
       <h1 className="text-2xl font-bold text-ink">📖 ประวัติการสั่ง</h1>

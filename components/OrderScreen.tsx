@@ -24,6 +24,7 @@ type Props = {
   products: Product[];
   last: { label: string; count: number; items: ReorderItem[] } | null;
   active: { remaining: number; total: number } | null;
+  showBackButton?: boolean;
 };
 
 const round2 = (n: number) => Math.round(n * 100) / 100;
@@ -39,6 +40,7 @@ export default function OrderScreen({
   products,
   last,
   active,
+  showBackButton = false,
 }: Props) {
   const router = useRouter();
   const { draft, setDraft } = useDraft(familyId);
@@ -223,6 +225,18 @@ export default function OrderScreen({
 
   return (
     <>
+      {showBackButton ? (
+        <div className="mb-3">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 rounded-2xl border border-mint-200/80 bg-white px-4 py-2.5 text-sm font-bold text-ink shadow-2xs transition-all hover:bg-mint-50 hover:border-mint-300 active:scale-95 active:bg-mint-100"
+          >
+            <span className="text-base font-black text-mint-700">←</span>
+            <span>หน้าหลัก</span>
+          </Link>
+        </div>
+      ) : null}
+
       <header className="relative flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <img
@@ -241,10 +255,10 @@ export default function OrderScreen({
         </div>
 
         <Link
-          href="/notify"
+          href="/settings"
           className="flex items-center gap-1.5 rounded-2xl border-2 border-mint-200 bg-white py-2 px-3 text-xs font-bold text-ink shadow-xs transition-all active:scale-95 hover:border-mint-300 hover:bg-mint-50 shrink-0"
         >
-          <span className="text-base">🔔</span>
+          <span className="text-base">⚙️</span>
           <span>ตั้งค่า</span>
         </Link>
       </header>
