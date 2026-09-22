@@ -168,9 +168,10 @@ export default function ReviewSheet({
               <button
                 type="button"
                 onClick={onClose}
-                className="py-1 text-sm font-semibold text-ink-soft underline hover:text-ink"
+                className="inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-bold text-ink-soft hover:bg-mint-50 hover:text-ink active:scale-95 transition-all"
               >
-                ← กลับไปแก้ไข
+                <span className="text-mint-700">←</span>
+                <span>กลับไปแก้ไข</span>
               </button>
 
               <button

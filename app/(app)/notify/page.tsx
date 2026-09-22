@@ -64,9 +64,15 @@ export default async function NotifyPage() {
 
   return (
     <>
-      <Link href="/" className="inline-block py-2 text-sm text-ink-soft">
-        ← กลับ
-      </Link>
+      <div className="mb-3">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 rounded-2xl border border-mint-200/80 bg-white px-4 py-2.5 text-sm font-bold text-ink shadow-2xs transition-all hover:bg-mint-50 hover:border-mint-300 active:scale-95 active:bg-mint-100"
+        >
+          <span className="text-base font-black text-mint-700">←</span>
+          <span>กลับ</span>
+        </Link>
+      </div>
       <h1 className="text-2xl font-bold">🔔 ตั้งค่า Telegram</h1>
       <p className="mt-1 text-sm text-ink-soft leading-relaxed">
         เมื่อมีคนสั่งของ ระบบจะส่งแจ้งเตือนเข้า Telegram ของคนอื่นในบ้าน
