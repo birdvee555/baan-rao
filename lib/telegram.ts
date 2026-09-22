@@ -228,34 +228,61 @@ export async function notifyOthers(
   botToken?: string,
 ): Promise<void> {
   try {
-    // 1. ลองดึงจากตาราง telegram_recipients ก่อน (รองรับผู้รับหลายคน)
-    let recipientList: Array<{ id: string; chat_id: number; isRecipientTable: boolean }> = [];
-    
-    const recRes = await db()
-      .from("telegram_recipients")
-      .select("id,chat_id,enabled")
-      .eq("family_id", familyId)
-      .eq("enabled", true);
+    const recipientList: Array<{ id: string; chat_id: number; isRecipientTable: boolean }> = [];
 
-    if (recRes.data && recRes.data.length > 0) {
-      recipientList = recRes.data.map((r) => ({
-        id: r.id as string,
-        chat_id: Number(r.chat_id),
-        isRecipientTable: true,
-      }));
-    } else if (recRes.error && (recRes.error.code === "42P01" || recRes.error.message?.includes("does not exist"))) {
-      // ตารางยังไม่มี ให้ fallback ไปยัง family_members
-      const fallback = await db()
+    // 1. ดึงจาก family_members เสมอ (ที่ผูกผ่าน Telegram /start หรือ /notify)
+    try {
+      let { data: members, error } = await db()
         .from("family_members")
-        .select("id,telegram_chat_id")
+        .select("id,telegram_chat_id,telegram_notifications_enabled")
         .eq("family_id", familyId)
         .not("telegram_chat_id", "is", null);
 
-      recipientList = (fallback.data ?? []).map((r) => ({
-        id: r.id as string,
-        chat_id: Number(r.telegram_chat_id),
-        isRecipientTable: false,
-      }));
+      if (error && (error.code === "42703" || error.code === "PGRST204")) {
+        const fallback = await db()
+          .from("family_members")
+          .select("id,telegram_chat_id")
+          .eq("family_id", familyId)
+          .not("telegram_chat_id", "is", null);
+        members = (fallback.data ?? []).map((r) => ({ ...r, telegram_notifications_enabled: true }));
+      }
+
+      if (members && members.length > 0) {
+        for (const m of members) {
+          if ((m as Record<string, unknown>).telegram_notifications_enabled !== false && m.telegram_chat_id) {
+            recipientList.push({
+              id: m.id as string,
+              chat_id: Number(m.telegram_chat_id),
+              isRecipientTable: false,
+            });
+          }
+        }
+      }
+    } catch (err) {
+      console.error("Error reading family_members recipients:", err);
+    }
+
+    // 2. ดึงจากตาราง telegram_recipients เพิ่มเติม (ถ้ามีตารางนี้ในฐานข้อมูล)
+    try {
+      const { data: recs, error } = await db()
+        .from("telegram_recipients")
+        .select("id,chat_id,enabled")
+        .eq("family_id", familyId)
+        .eq("enabled", true);
+
+      if (!error && recs && recs.length > 0) {
+        for (const r of recs) {
+          if (r.chat_id) {
+            recipientList.push({
+              id: r.id as string,
+              chat_id: Number(r.chat_id),
+              isRecipientTable: true,
+            });
+          }
+        }
+      }
+    } catch {
+      // ข้ามหากตาราง telegram_recipients ยังไม่มี
     }
 
     if (!recipientList.length) return;
@@ -273,7 +300,6 @@ export async function notifyOthers(
         const result = await tgSend(chatId, text, botToken);
         if (result === "blocked") {
           if (info.isRecipientTable) {
-            // ปิด enabled ของผู้รับนี้หากบอทถูกบล็อก (403)
             await db().from("telegram_recipients").update({ enabled: false }).eq("id", info.id);
           } else {
             await db().from("family_members").update({ telegram_chat_id: null }).eq("id", info.id);
@@ -281,8 +307,8 @@ export async function notifyOthers(
         }
       }),
     );
-  } catch {
-    // แจ้งเตือนพลาดไม่ควรกระทบอะไร — ข้อมูลถูกบันทึกไปแล้ว
+  } catch (err) {
+    console.error("notifyOthers error:", err);
   }
 }
 
