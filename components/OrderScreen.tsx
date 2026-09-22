@@ -253,14 +253,6 @@ export default function OrderScreen({
             </h1>
           </div>
         </div>
-
-        <Link
-          href="/settings"
-          className="flex items-center gap-1.5 rounded-2xl border-2 border-mint-200 bg-white py-2 px-3 text-xs font-bold text-ink shadow-xs transition-all active:scale-95 hover:border-mint-300 hover:bg-mint-50 shrink-0"
-        >
-          <span className="text-base">⚙️</span>
-          <span>ตั้งค่า</span>
-        </Link>
       </header>
 
       {active && active.remaining > 0 ? (
@@ -276,18 +268,11 @@ export default function OrderScreen({
       ) : null}
 
       <section className="mt-4">
-        {/* ── แถวหัวข้อ + ปุ่มเพิ่มของ ── */}
-        <div className="flex items-center justify-between gap-3">
+        {/* ── แถวหัวข้อ ── */}
+        <div>
           <p className="text-sm font-semibold text-ink-soft">
             {searchQuery ? `พบสินค้า ${filteredProducts.length} รายการ` : "แตะเลือกของที่ต้องการได้เลย"}
           </p>
-          <button
-            type="button"
-            onClick={() => setEditor({})}
-            className="h-10 shrink-0 rounded-full border-2 border-mint-200 bg-white px-3.5 text-xs font-bold text-mint-700 active:bg-mint-50 shadow-xs transition-colors"
-          >
-            ＋ เพิ่มของ
-          </button>
         </div>
 
         {/* ── ช่องค้นหาด่วน (Quick Search Bar) ── */}
