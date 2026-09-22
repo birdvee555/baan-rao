@@ -33,14 +33,14 @@ export default async function SettingsPage() {
         {/* เมนูย่อย 1: ทะเบียนสินค้า */}
         <Link
           href="/products"
-          className="group flex items-center gap-4 rounded-3xl border-2 border-mint-200/90 bg-white p-4.5 shadow-sm transition-all hover:border-mint-400 hover:shadow-md active:scale-[0.98] active:bg-mint-50/40"
+          className="group flex items-center gap-4 rounded-3xl border-2 border-mint-200/90 bg-white p-4 sm:p-5 shadow-sm transition-all hover:border-mint-400 hover:shadow-md active:scale-[0.98] active:bg-mint-50/40"
         >
           <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-mint-100 to-emerald-100 text-2xl shadow-2xs group-hover:scale-105 transition-transform">
             📦
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-black text-ink group-hover:text-mint-800 transition-colors">
+              <h2 className="text-lg font-bold text-ink group-hover:text-mint-800 transition-colors">
                 ทะเบียนสินค้า
               </h2>
               <span className="text-lg text-mint-600 font-bold opacity-70 group-hover:translate-x-1 transition-transform">
@@ -56,7 +56,7 @@ export default async function SettingsPage() {
         {/* เมนูย่อย 2: Telegram */}
         <Link
           href="/notify"
-          className="group flex items-center gap-4 rounded-3xl border-2 border-sky-200/90 bg-white p-4.5 shadow-sm transition-all hover:border-sky-400 hover:shadow-md active:scale-[0.98] active:bg-sky-50/40"
+          className="group flex items-center gap-4 rounded-3xl border-2 border-sky-200/90 bg-white p-4 sm:p-5 shadow-sm transition-all hover:border-sky-400 hover:shadow-md active:scale-[0.98] active:bg-sky-50/40"
         >
           <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-sky-100 to-cyan-100 text-2xl shadow-2xs group-hover:scale-105 transition-transform">
             🤖

@@ -38,7 +38,7 @@ export default async function HistoryDetailPage({ params }: { params: Promise<{ 
       </div>
 
       {/* ── ข้อมูลสรุปออเดอร์ Card ── */}
-      <div className="rounded-3xl border border-mint-200/90 bg-white p-4.5 shadow-2xs space-y-2">
+      <div className="rounded-3xl border border-mint-200/90 bg-white p-4 sm:p-5 shadow-2xs space-y-2">
         <div className="flex items-start justify-between gap-3">
           <div>
             <div className="flex items-center gap-2 flex-wrap">
