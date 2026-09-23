@@ -64,3 +64,39 @@ export type Draft = Record<string, DraftItem>;
 
 /** ของรอบก่อนที่จะนำกลับมาเลือกใหม่ */
 export type ReorderItem = { productId: string; q: number; n: string };
+
+export type Person = {
+  id: string;
+  family_id: string;
+  name: string;
+  avatar: string;
+  kind: "child" | "adult";
+  created_at: string;
+};
+
+export type Appointment = {
+  id: string;
+  family_id: string;
+  person_id: string;
+  title: string;
+  category: string | null;
+  appointment_at: string;
+  location: string | null;
+  note: string | null;
+  remind_before_hours: number | null;
+  status: "upcoming" | "done" | "cancelled";
+  reminded_at: string | null;
+  created_at: string;
+  person?: Person;
+};
+
+export type RestockItem = {
+  id: string;
+  family_id: string;
+  name: string;
+  link: string | null;
+  note: string | null;
+  added_at: string;
+  bought_at: string | null;
+};
+

@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { DEFAULT_CATEGORIES } from "./categories";
 import { db } from "./db";
-import type { Category, ListItem, Member, Product, ShoppingList } from "./types";
+import type { Appointment, Category, ListItem, Member, Person, Product, RestockItem, ShoppingList } from "./types";
 
 const num = (v: unknown) => Number(v);
 
@@ -277,3 +277,83 @@ export async function getListDetail(
   if (!data) return null;
   return { list: data as ShoppingList, items: await itemsOf(data.id) };
 }
+
+export const getPeople = cache(async (familyId: string): Promise<Person[]> => {
+  try {
+    const { data, error } = await db()
+      .from("people")
+      .select("*")
+      .eq("family_id", familyId)
+      .order("created_at", { ascending: true });
+    if (error || !data) return [];
+    return data as Person[];
+  } catch {
+    return [];
+  }
+});
+
+export const getAppointments = cache(async (familyId: string): Promise<Appointment[]> => {
+  try {
+    const [apptsRes, people] = await Promise.all([
+      db()
+        .from("appointments")
+        .select("*")
+        .eq("family_id", familyId)
+        .order("appointment_at", { ascending: true }),
+      getPeople(familyId),
+    ]);
+
+    if (apptsRes.error || !apptsRes.data) return [];
+    const peopleMap = new Map(people.map((p) => [p.id, p]));
+    return (apptsRes.data as Appointment[]).map((a) => ({
+      ...a,
+      person: peopleMap.get(a.person_id),
+    }));
+  } catch {
+    return [];
+  }
+});
+
+export const getUpcomingAppointmentsCount = cache(async (familyId: string): Promise<number> => {
+  try {
+    const { count, error } = await db()
+      .from("appointments")
+      .select("*", { count: "exact", head: true })
+      .eq("family_id", familyId)
+      .eq("status", "upcoming")
+      .gte("appointment_at", new Date().toISOString());
+    if (error) return 0;
+    return count ?? 0;
+  } catch {
+    return 0;
+  }
+});
+
+export const getRestockItems = cache(async (familyId: string): Promise<RestockItem[]> => {
+  try {
+    const { data, error } = await db()
+      .from("restock_items")
+      .select("*")
+      .eq("family_id", familyId)
+      .is("bought_at", null)
+      .order("added_at", { ascending: false });
+    if (error || !data) return [];
+    return data as RestockItem[];
+  } catch {
+    return [];
+  }
+});
+
+export const getUnboughtRestockCount = cache(async (familyId: string): Promise<number> => {
+  try {
+    const { count, error } = await db()
+      .from("restock_items")
+      .select("*", { count: "exact", head: true })
+      .eq("family_id", familyId)
+      .is("bought_at", null);
+    if (error) return 0;
+    return count ?? 0;
+  } catch {
+    return 0;
+  }
+});

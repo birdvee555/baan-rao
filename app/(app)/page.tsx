@@ -1,12 +1,16 @@
 import Link from "next/link";
 import { requireMember } from "@/lib/auth";
-import { getActive } from "@/lib/queries";
+import { getActive, getUpcomingAppointmentsCount, getUnboughtRestockCount } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const { family } = await requireMember();
-  const active = await getActive(family.id);
+  const [active, upcomingApptsCount, unboughtRestockCount] = await Promise.all([
+    getActive(family.id),
+    getUpcomingAppointmentsCount(family.id),
+    getUnboughtRestockCount(family.id),
+  ]);
   const remaining = active.items.filter((i) => !i.is_purchased).length;
 
   return (
@@ -107,7 +111,60 @@ export default async function HomePage() {
           </div>
         </Link>
 
-        {/* เมนูที่ 2 & 3: ประวัติการสั่ง และ ตั้งค่า จัดวางเป็น 2 คอลัมน์ด้านล่าง */}
+        {/* เมนูแถว 2: นัดหมาย และ ของรอเพย์เดย์ (2 คอลัมน์) */}
+        <div className="grid grid-cols-2 gap-3 sm:gap-4">
+          {/* การ์ดนัดหมาย */}
+          <Link
+            href="/appointments"
+            className="group flex flex-col justify-between rounded-3xl border-2 border-sky-200/80 bg-white p-3.5 sm:p-4 shadow-sm transition-all hover:border-sky-400 hover:shadow-md active:scale-[0.98] active:bg-sky-50/40 min-h-[115px]"
+          >
+            <div className="flex items-center justify-between">
+              <div className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-sky-100 to-indigo-100 text-2xl shadow-2xs group-hover:scale-105 transition-transform">
+                📅
+              </div>
+              <span className="text-base text-sky-600 font-bold opacity-70 group-hover:translate-x-0.5 transition-transform">
+                →
+              </span>
+            </div>
+            <div className="mt-2.5">
+              <h3 className="text-base font-bold text-ink group-hover:text-sky-800 transition-colors">
+                นัดหมาย
+              </h3>
+              <p className="mt-0.5 text-xs font-medium text-ink-soft truncate">
+                {upcomingApptsCount > 0
+                  ? `มีนัด ${upcomingApptsCount} รายการ`
+                  : "ตารางนัดหมายในบ้าน"}
+              </p>
+            </div>
+          </Link>
+
+          {/* การ์ดของรอเพย์เดย์ */}
+          <Link
+            href="/restock"
+            className="group flex flex-col justify-between rounded-3xl border-2 border-pink-200/80 bg-white p-3.5 sm:p-4 shadow-sm transition-all hover:border-pink-400 hover:shadow-md active:scale-[0.98] active:bg-pink-50/40 min-h-[115px]"
+          >
+            <div className="flex items-center justify-between">
+              <div className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-pink-100 to-rose-100 text-2xl shadow-2xs group-hover:scale-105 transition-transform">
+                🛍️
+              </div>
+              <span className="text-base text-pink-600 font-bold opacity-70 group-hover:translate-x-0.5 transition-transform">
+                →
+              </span>
+            </div>
+            <div className="mt-2.5">
+              <h3 className="text-base font-bold text-ink group-hover:text-pink-800 transition-colors">
+                ของรอเพย์เดย์
+              </h3>
+              <p className="mt-0.5 text-xs font-medium text-ink-soft truncate">
+                {unboughtRestockCount > 0
+                  ? `รอซื้อ ${unboughtRestockCount} รายการ`
+                  : "แปะลิงก์รอสิ้นเดือน"}
+              </p>
+            </div>
+          </Link>
+        </div>
+
+        {/* เมนูแถว 3: ประวัติการสั่ง และ ตั้งค่า (2 คอลัมน์) */}
         <div className="grid grid-cols-2 gap-3 sm:gap-4">
           {/* การ์ดประวัติการสั่ง */}
           <Link
