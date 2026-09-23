@@ -100,3 +100,21 @@ export type RestockItem = {
   bought_at: string | null;
 };
 
+export type TodoPriority = "low" | "normal" | "high" | "urgent";
+export type TodoStatus = "pending" | "done";
+
+export type HouseTodo = {
+  id: string;
+  family_id: string;
+  person_id: string | null;
+  title: string;
+  note: string | null;
+  category: string | null;
+  priority: TodoPriority;
+  due_date: string | null;
+  status: TodoStatus;
+  completed_at: string | null;
+  created_at: string;
+  person?: Person | null;
+};
+

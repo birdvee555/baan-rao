@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { DEFAULT_CATEGORIES } from "./categories";
 import { db } from "./db";
-import type { Appointment, Category, ListItem, Member, Person, Product, RestockItem, ShoppingList } from "./types";
+import type { Appointment, Category, HouseTodo, ListItem, Member, Person, Product, RestockItem, ShoppingList } from "./types";
 
 const num = (v: unknown) => Number(v);
 
@@ -351,6 +351,42 @@ export const getUnboughtRestockCount = cache(async (familyId: string): Promise<n
       .select("*", { count: "exact", head: true })
       .eq("family_id", familyId)
       .is("bought_at", null);
+    if (error) return 0;
+    return count ?? 0;
+  } catch {
+    return 0;
+  }
+});
+
+export const getHouseTodos = cache(async (familyId: string): Promise<HouseTodo[]> => {
+  try {
+    const [todosRes, people] = await Promise.all([
+      db()
+        .from("house_todos")
+        .select("*")
+        .eq("family_id", familyId)
+        .order("created_at", { ascending: false }),
+      getPeople(familyId),
+    ]);
+
+    if (todosRes.error || !todosRes.data) return [];
+    const peopleMap = new Map(people.map((p) => [p.id, p]));
+    return (todosRes.data as HouseTodo[]).map((t) => ({
+      ...t,
+      person: t.person_id ? peopleMap.get(t.person_id) || null : null,
+    }));
+  } catch {
+    return [];
+  }
+});
+
+export const getPendingTodosCount = cache(async (familyId: string): Promise<number> => {
+  try {
+    const { count, error } = await db()
+      .from("house_todos")
+      .select("*", { count: "exact", head: true })
+      .eq("family_id", familyId)
+      .eq("status", "pending");
     if (error) return 0;
     return count ?? 0;
   } catch {

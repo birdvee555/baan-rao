@@ -15,6 +15,7 @@
 - **Telegram Notification & Webhook**: แจ้งเตือนรายการของเข้า Telegram และผูกบัญชีด้วย Webhook ผ่านหน้าเว็บได้ทันที
 - **นัดหมาย (Appointments)**: จัดการนัดหมายของคนในบ้าน (เด็ก/ผู้ใหญ่) เช่น หาหมอ ฉีดวัคซีน สอบ พร้อมตั้งเวลาเตือนล่วงหน้าผ่าน Telegram
 - **ของรอเพย์เดย์ (Restock Items)**: แปะลิงก์ของใช้ที่เล็งไว้ (Shopee, TikTok, Lazada ฯลฯ) พร้อมแจ้งเตือนสรุปรายการอัตโนมัติทุกวันที่ 25 ของเดือน
+- **โน้ตและสิ่งที่ต้องทำในบ้าน (House Todos)**: จดงานบ้าน สิ่งที่ต้องซ่อม จ่ายบิล มอบหมายคนในบ้าน พร้อมกำหนดวันเสร็จและความสำคัญ
 - **Supabase Free Tier Keepalive & Reminders**: มี Cron Job สำหรับปลุกฐานข้อมูล และส่งการแจ้งเตือนนัดหมายและของรอเพย์เดย์
 
 ---
@@ -40,7 +41,7 @@
 
 ---
 
-## 🗄️ ลำดับการรัน Database Migrations (001 - 012)
+## 🗄️ ลำดับการรัน Database Migrations (001 - 013)
 
 ให้รันไฟล์ SQL ในโฟลเดอร์ `supabase/migrations/` ผ่านทาง Supabase Dashboard → **SQL Editor** ตามลำดับดังนี้:
 
@@ -57,6 +58,7 @@
 10. `010_hardening.sql`: เสริมความปลอดภัย `search_path = public` บนฟังก์ชัน `submit_order` และ `remove_list_item` พร้อมจำกัดสิทธิ์ให้เฉพาะ `service_role`
 11. `011_order_features.sql`: ฟีเจอร์เพิ่มเติมสำหรับออเดอร์และการจัดการสินค้า
 12. `012_appointments_and_restock.sql`: ตาราง `people`, `appointments`, `restock_items`, `restock_reminder_log` สำหรับฟีเจอร์นัดหมายและของรอเพย์เดย์
+13. `013_house_todos.sql`: ตาราง `house_todos` สำหรับระบบโน้ตและสิ่งที่ต้องทำในบ้าน
 
 ---
 

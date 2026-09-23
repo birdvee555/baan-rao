@@ -1,15 +1,16 @@
 import Link from "next/link";
 import { requireMember } from "@/lib/auth";
-import { getActive, getUpcomingAppointmentsCount, getUnboughtRestockCount } from "@/lib/queries";
+import { getActive, getPendingTodosCount, getUpcomingAppointmentsCount, getUnboughtRestockCount } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const { family } = await requireMember();
-  const [active, upcomingApptsCount, unboughtRestockCount] = await Promise.all([
+  const [active, upcomingApptsCount, unboughtRestockCount, pendingTodosCount] = await Promise.all([
     getActive(family.id),
     getUpcomingAppointmentsCount(family.id),
     getUnboughtRestockCount(family.id),
+    getPendingTodosCount(family.id),
   ]);
   const remaining = active.items.filter((i) => !i.is_purchased).length;
 
@@ -164,8 +165,33 @@ export default async function HomePage() {
           </Link>
         </div>
 
-        {/* เมนูแถว 3: ประวัติการสั่ง และ ตั้งค่า (2 คอลัมน์) */}
+        {/* เมนูแถว 3: สิ่งที่ต้องทำ และ ประวัติการสั่ง (2 คอลัมน์) */}
         <div className="grid grid-cols-2 gap-3 sm:gap-4">
+          {/* การ์ดสิ่งที่ต้องทำ */}
+          <Link
+            href="/todos"
+            className="group flex flex-col justify-between rounded-3xl border-2 border-purple-200/80 bg-white p-3.5 sm:p-4 shadow-sm transition-all hover:border-purple-400 hover:shadow-md active:scale-[0.98] active:bg-purple-50/40 min-h-[115px]"
+          >
+            <div className="flex items-center justify-between">
+              <div className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-purple-100 to-violet-100 text-2xl shadow-2xs group-hover:scale-105 transition-transform">
+                📝
+              </div>
+              <span className="text-base text-purple-600 font-bold opacity-70 group-hover:translate-x-0.5 transition-transform">
+                →
+              </span>
+            </div>
+            <div className="mt-2.5">
+              <h3 className="text-base font-bold text-ink group-hover:text-purple-800 transition-colors">
+                สิ่งที่ต้องทำ
+              </h3>
+              <p className="mt-0.5 text-xs font-medium text-ink-soft truncate">
+                {pendingTodosCount > 0
+                  ? `เหลืองาน ${pendingTodosCount} อย่าง`
+                  : "งานบ้านและโน้ต"}
+              </p>
+            </div>
+          </Link>
+
           {/* การ์ดประวัติการสั่ง */}
           <Link
             href="/history"
@@ -188,30 +214,30 @@ export default async function HomePage() {
               </p>
             </div>
           </Link>
+        </div>
 
-          {/* การ์ดตั้งค่า */}
-          <Link
-            href="/settings"
-            className="group flex flex-col justify-between rounded-3xl border-2 border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-sm transition-all hover:border-slate-400 hover:shadow-md active:scale-[0.98] active:bg-slate-50/60 min-h-[115px]"
-          >
-            <div className="flex items-center justify-between">
-              <div className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-slate-100 to-zinc-100 text-2xl shadow-2xs group-hover:scale-105 transition-transform">
-                ⚙️
-              </div>
-              <span className="text-base text-slate-500 font-bold opacity-70 group-hover:translate-x-0.5 transition-transform">
-                →
-              </span>
+        {/* เมนูแถว 4: ตั้งค่า (การ์ดแนวนอน เรียบหรู สะอาดตา) */}
+        <Link
+          href="/settings"
+          className="group flex items-center justify-between rounded-3xl border-2 border-slate-200/90 bg-white px-4 py-3.5 shadow-sm transition-all hover:border-slate-400 hover:shadow-md active:scale-[0.98] active:bg-slate-50/60"
+        >
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-slate-100 to-zinc-100 text-2xl shadow-2xs group-hover:scale-105 transition-transform">
+              ⚙️
             </div>
-            <div className="mt-2.5">
+            <div className="min-w-0">
               <h3 className="text-base font-bold text-ink group-hover:text-slate-800 transition-colors">
                 ตั้งค่า
               </h3>
-              <p className="mt-0.5 text-xs font-medium text-ink-soft truncate">
-                Telegram • สินค้า
+              <p className="text-xs font-medium text-ink-soft truncate">
+                จัดการสินค้า • หมวดหมู่ • แจ้งเตือน Telegram
               </p>
             </div>
-          </Link>
-        </div>
+          </div>
+          <span className="text-base text-slate-500 font-bold opacity-70 group-hover:translate-x-0.5 transition-transform pr-1 shrink-0">
+            →
+          </span>
+        </Link>
       </nav>
     </div>
   );
