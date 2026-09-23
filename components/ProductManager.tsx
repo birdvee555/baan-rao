@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
 import type { Category, Product } from "@/lib/types";
 import { archiveProduct } from "@/lib/actions/shop";
+import { categorizeProduct } from "@/lib/categories";
 import ProductIcon from "./ProductIcon";
 import ProductSheet from "./ProductSheet";
 
@@ -34,10 +35,16 @@ export default function ProductManager({ categories, initialProducts }: Props) {
     return map;
   }, [categories]);
 
+  // Helper แมป Category ID ให้กับสินค้า (รองรับทั้ง category_id ใน DB และ smart fallback จากชื่อ)
+  const resolveCatId = (p: Product) => {
+    if (p.category_id) return p.category_id;
+    return categorizeProduct(p.name, null, categories).id;
+  };
+
   // กรองสินค้าตามค้นหาและหมวดหมู่
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
-      if (selectedCategory !== "all" && p.category_id !== selectedCategory) {
+      if (selectedCategory !== "all" && resolveCatId(p) !== selectedCategory) {
         return false;
       }
       if (search.trim()) {
@@ -46,7 +53,7 @@ export default function ProductManager({ categories, initialProducts }: Props) {
       }
       return true;
     });
-  }, [products, selectedCategory, search]);
+  }, [products, selectedCategory, search, categories]);
 
   function handleSaved(saved: Product, isNew: boolean) {
     setProducts((prev) => {
@@ -130,7 +137,7 @@ export default function ProductManager({ categories, initialProducts }: Props) {
       </div>
 
       {/* ── Category Filter Chips ── */}
-      <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
         <button
           type="button"
           onClick={() => setSelectedCategory("all")}
@@ -143,7 +150,7 @@ export default function ProductManager({ categories, initialProducts }: Props) {
           ทั้งหมด ({products.length})
         </button>
         {categories.map((c) => {
-          const count = products.filter((p) => p.category_id === c.id).length;
+          const count = products.filter((p) => resolveCatId(p) === c.id).length;
           return (
             <button
               key={c.id}
@@ -161,6 +168,15 @@ export default function ProductManager({ categories, initialProducts }: Props) {
             </button>
           );
         })}
+
+        {/* ปุ่มทางลัดไปหน้าจัดการหมวดหมู่ */}
+        <Link
+          href="/categories"
+          className="flex shrink-0 items-center gap-1.5 rounded-2xl border-2 border-dashed border-mint-300 bg-mint-50/60 px-3.5 py-1.5 text-xs font-bold text-mint-800 hover:bg-mint-100 hover:border-mint-400 active:scale-95 transition-all"
+        >
+          <span>🏷️</span>
+          <span>จัดการหมวดหมู่</span>
+        </Link>
       </div>
 
       {/* ── รายการสินค้า ── */}

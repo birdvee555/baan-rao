@@ -54,6 +54,29 @@ export default async function SettingsPage() {
           </div>
         </Link>
 
+        {/* เมนูย่อย 2: หมวดหมู่สินค้า */}
+        <Link
+          href="/categories"
+          className="group flex items-center gap-4 rounded-3xl border-2 border-emerald-200/90 bg-white p-4 sm:p-5 shadow-sm transition-all hover:border-emerald-400 hover:shadow-md active:scale-[0.98] active:bg-emerald-50/40"
+        >
+          <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-100 text-2xl shadow-2xs group-hover:scale-105 transition-transform">
+            🏷️
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-bold text-ink group-hover:text-emerald-800 transition-colors">
+                หมวดหมู่สินค้า
+              </h2>
+              <span className="text-lg text-emerald-600 font-bold opacity-70 group-hover:translate-x-1 transition-transform">
+                →
+              </span>
+            </div>
+            <p className="mt-0.5 text-xs font-medium text-ink-soft">
+              เพิ่ม / แก้ไข / ลบหมวดหมู่สินค้าในบ้าน
+            </p>
+          </div>
+        </Link>
+
         {/* เมนูย่อย 2: Telegram */}
         <Link
           href="/notify"
